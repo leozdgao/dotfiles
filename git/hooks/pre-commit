@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# 检查所在工作目录下是否有 .gitconfig 文件，如果存在，则根据此文件设置 user.name 以及 user.email
+
+# 从当前工作目录的上级目录读取 .gitconfig 文件，格式为：
+# ```
+# [user]
+#   name = <name>
+#   email = <email>
+# ```
+LOCAL_WORKSPACE_CONFIG='../.gitconfig'
+
+if [ -f "$LOCAL_WORKSPACE_CONFIG" ]
+then
+  echo '发现本地 git user 配置'
+  # 读取文件内容，并按行分隔
+  # array_of_lines=("${(@f)$(< $LOCAL_WORKSPACE_CONFIG)}")
+  # git config
+  # name=$array_of_lines[1]
+  # email=$array_of_lines[2]
+
+  name=$(awk -F "=" '/name/ {print $2}' $LOCAL_WORKSPACE_CONFIG)
+  email=$(awk -F "=" '/email/ {print $2}' $LOCAL_WORKSPACE_CONFIG)
+
+  echo 使用配置：
+  echo name = $name
+  echo email = $email
+
+  # 设置仓库配置
+  git config user.name $name
+  git config user.email $email
+fi
